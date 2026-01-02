@@ -2,28 +2,21 @@ using PlatformService.Models;
 
 namespace PlatformService.Data
 {
-    public class PlatformRepo : IPlatformRepo
+    public class PlatformRepo(AppDbContext context) : IPlatformRepo
     {
-        AppDbContext _context;
-
-        public PlatformRepo(AppDbContext context)
-        {
-            _context = context;
-        }
-
         bool IPlatformRepo.SaveChanges()
         {
-            return _context.SaveChanges() >= 0;
+            return context.SaveChanges() >= 0;
         }
 
         IEnumerable<Platform> IPlatformRepo.GetAllPlatforms()
         {
-            return _context.Platforms.ToList();
+            return context.Platforms.ToList();
         }
 
-        Platform IPlatformRepo.GetPlatformById(int id)
+        Platform? IPlatformRepo.GetPlatformById(int id)
         {
-            var platform = _context.Platforms.FirstOrDefault(p => p.Id == id);
+            var platform = context.Platforms.FirstOrDefault(p => p.Id == id);
 
             if (platform is null)
             {
@@ -38,7 +31,7 @@ namespace PlatformService.Data
             {
                 throw new ArgumentNullException(nameof(platform));
             }
-            _context.Platforms.Add(platform);
+            context.Platforms.Add(platform);
         }
     }
 }
